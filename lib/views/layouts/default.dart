@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DefaultLayout extends StatelessWidget {
   final PreferredSizeWidget? header;
@@ -14,11 +15,14 @@ class DefaultLayout extends StatelessWidget {
         FocusScope.of(context).unfocus();
         TextEditingController().clear();
       },
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: backgroundColor,
-          appBar: header,
-          body: body
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: header,
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light.copyWith(
+            statusBarColor: Theme.of(context).primaryColor
+          ),
+          child: SafeArea(child: body ?? Container())
         )
       ),
     );

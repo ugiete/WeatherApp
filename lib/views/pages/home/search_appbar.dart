@@ -9,8 +9,9 @@ import 'package:weather_app/services/storage/storage.dart';
 class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final int suggestionsLength;
   final void Function(int) onChange;
+  final void Function() onSelect;
 
-  const SearchAppBar({required this.suggestionsLength, required this.onChange, super.key});
+  const SearchAppBar({required this.suggestionsLength, required this.onChange, required this.onSelect, super.key});
 
   @override
   State<SearchAppBar> createState() => _SearchAppBarState();
@@ -114,6 +115,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
                             onTap: () {
                               saveLocation(city);
                               clear();
+                              widget.onSelect();
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10),

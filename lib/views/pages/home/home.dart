@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int suggestionsLength = 0;
+  List<LocationModel> locations = [];
 
   void onChangeSuggestions(int length) {
     setState(() {
@@ -21,13 +22,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<List<LocationModel>> loadSavedLocations() async {
+  Future<void> loadSavedLocations() async {
     StorageService storage = StorageService();
-    List<LocationModel> locations = await storage.readAllLocations();
+    List<LocationModel> savedLocations = await storage.readAllLocations();
 
-    print(locations);
+    setState(() {
+      locations = savedLocations;
+    });
+  }
 
-    return locations;
+  @override
+  void initState() {
+    loadSavedLocations();
+    super.initState();
   }
 
   @override
@@ -36,43 +43,25 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.black,
       header: SearchAppBar(
         suggestionsLength: suggestionsLength,
-        onChange: onChangeSuggestions
+        onChange: onChangeSuggestions,
+        onSelect: loadSavedLocations,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: ListView(
           children: [
             const SizedBox(height: 15.0),
-            FutureBuilder(
-              future: loadSavedLocations(),
-              builder: (BuildContext context, AsyncSnapshot<List<LocationModel>> snapshot) {
-                if(snapshot.hasError) {
-                  return const Center(
-                    child: Text('Error!'),
-                  );
-                }
-
-                if (snapshot.hasData) {
-                  List<LocationModel> locations = snapshot.data ?? [];
-
-                  return ListView.builder(
-                    physics: const ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: locations.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: LocationTile(location: locations[index]),
-                      );
-                    },
-                  );
-                }
-
-                return const Center(
-                  child: CircularProgressIndicator()
-                ); 
-              }
-            ),
+            ListView.builder(
+              physics: const ScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: locations.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: LocationTile(location: locations[index]),
+                );
+              },
+            )
           ],
         ),
       ),
