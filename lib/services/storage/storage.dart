@@ -34,4 +34,8 @@ class StorageService {
 
     return locations;
   }
+
+  Future<void> deleteLocation(int id) async {
+    await storage.delete(key: 'loc-$id');
+  }
 }

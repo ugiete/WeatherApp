@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/app/routes/routes.dart';
 import 'package:weather_app/views/pages/home/home.dart';
 
 class WeatherApp extends StatelessWidget {
@@ -6,9 +7,10 @@ class WeatherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      onGenerateRoute: onGenerateRoute,
+      initialRoute: HomePage.route,
     );
   }
 }

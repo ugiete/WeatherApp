@@ -12,7 +12,7 @@ Future<CurrentWeatherModel?> getCurrentWeather(LocationModel location) async {
     {
       'lat': '${location.latitude}',
       'lon': '${location.longitude}',
-      'appid': '03ff0e0da72e418ffce159c4018ac33d',
+      'appid': '307eac07e9da04d2560b2706968af830',
       'units': 'metric'
     }
   );

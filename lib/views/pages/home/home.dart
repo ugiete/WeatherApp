@@ -8,6 +8,8 @@ import 'package:weather_app/views/pages/home/search_appbar.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  static String get route => '/';
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -58,7 +60,10 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
-                  child: LocationTile(location: locations[index]),
+                  child: LocationTile(
+                    location: locations[index],
+                    onChange: loadSavedLocations,
+                  ),
                 );
               },
             )

@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:weather_app/app/styles/typography.dart';
 import 'package:weather_app/services/storage/payload/location.dart';
+import 'package:weather_app/services/storage/storage.dart';
 import 'package:weather_app/services/weather/payload/current_weather.dart';
 import 'package:weather_app/services/weather/weather.dart';
+import 'package:weather_app/views/pages/details/details.dart';
 
 class LocationTile extends StatelessWidget {
   final LocationModel location;
+  final void Function() onChange;
 
-  const LocationTile({required this.location, super.key});
+  const LocationTile({required this.location, required this.onChange, super.key});
+
+  Future<void> deleteLocation(BuildContext context) async {
+    StorageService storage = StorageService();
+    await storage.deleteLocation(location.id);
+    onChange();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,36 +31,65 @@ class LocationTile extends StatelessWidget {
         if (snapshot.hasData) {
           CurrentWeatherModel currentWeather = snapshot.data!;
 
-          return Container(
-            height: 100,
-            padding: const EdgeInsets.all(15.0),
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: NetworkImage('http://static1.squarespace.com/static/5ac3533bb27e39f181f34a32/t/60a67a9324c06f7ab8f7ea2e/1621523101366/unsplash-image-8iZG31eXkks.jpg?format=1500w'),
-                opacity: 0.5,
-                fit: BoxFit.cover
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                DetailsPage.route,
+                arguments: DetailsPageParams(location, currentWeather)
+              );
+            },
+            child: Slidable(
+              endActionPane: ActionPane(
+                motion: const ScrollMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: deleteLocation,
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    icon: Icons.delete,
+                    label: 'Delete',
+                  )
+                ]
               ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+              child: Container(
+                height: 100,
+                padding: const EdgeInsets.all(15.0),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                      currentWeather.isDay
+                        ? 'assets/day/${currentWeather.image}.jpg'
+                        : 'assets/night/${currentWeather.image}.jpg'
+                    ),
+                    fit: BoxFit.cover
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(location.city, style: highlightWhite(22.0)),
-                    Text('${currentWeather.temperature}º', style: highlightWhite(36.0))
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          location.city,
+                          overflow: TextOverflow.ellipsis,
+                          style: highlightWhite(22.0)
+                        ),
+                        Text('${currentWeather.temperature}º', style: highlightWhite(36.0))
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(currentWeather.mainCondition, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text('Máx: ${currentWeather.maxTemperature}º Min: ${currentWeather.minTemperature}º', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+                      ],
+                    )
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(currentWeather.condition, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('Máx: ${currentWeather.maxTemperature}º Min: ${currentWeather.minTemperature}º', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
-                  ],
-                )
-              ],
+              ),
             ),
           );
         }

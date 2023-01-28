@@ -11,7 +11,7 @@ class LocationModel {
 
   factory LocationModel.fromJSON(Map<String, dynamic> json) {
     int id = json['id'];
-    String city = json['city'];
+    String city = json['city'].split(',')[0];
     String regionCode = json['regionCode'];
     String country = json['country'];
     double latitude = json['latitude'];

@@ -25,6 +25,7 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _SearchAppBarState extends State<SearchAppBar> {
+  FocusNode focus = FocusNode();
   TextEditingController ctrl = TextEditingController();
   List<FindCityModel> suggestions = [];
 
@@ -86,6 +87,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15.0),
                           child: TextField(
+                            focusNode: focus,
                             enableSuggestions: false,
                             autocorrect: false,
                             controller: ctrl,
@@ -115,6 +117,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
                             onTap: () {
                               saveLocation(city);
                               clear();
+                              focus.unfocus();
                               widget.onSelect();
                             },
                             child: Container(
